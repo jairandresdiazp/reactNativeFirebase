@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
 import { getFirestore } from 'firebase/firestore';
-import 'firebase/firestore';
+
 const firebaseConfig = {
   apiKey: 'AIzaSyBBFt2lnOJiSmg8OXM6Y49kbWG0a10r6fA',
   authDomain: 'reactnativefirebase-c75c6.firebaseapp.com',
@@ -12,9 +12,9 @@ const firebaseConfig = {
   measurementId: 'G-B9SYF7MKX7',
 };
 
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const db = getFirestore(app);
+export const app = initializeApp(firebaseConfig);
+export const analytics = getAnalytics(app);
+export const db = getFirestore(app);
 
 export default {
   app,

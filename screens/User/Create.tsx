@@ -1,18 +1,22 @@
 import React, { FunctionComponent, useState } from 'react';
-import { View, Text, ScrollView, TextInput, Button } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import styles from './styles';
-import firebase from '../../database/firebase';
-import { addDoc, collection } from 'firebase/firestore';
+import { db } from '../../database/firebase';
+import { doc, setDoc } from 'firebase/firestore';
+import { Button, Input } from 'react-native-elements';
+import { UserType } from 'types-app';
 
-interface CreateUsersProps {}
+interface CreateUsersProps {
+  navigation: any;
+}
 
-const CreateUsers: FunctionComponent<CreateUsersProps> = () => {
-  const initState = {
-    name: '',
+const CreateUsers: FunctionComponent<CreateUsersProps> = ({ navigation }) => {
+  const initState: UserType = {
     email: '',
+    name: '',
     phone: '',
   };
-  const [state, setSatate] = useState(initState);
+  const [state, setSatate] = useState<UserType>(initState);
   const handleChangeText = (key: string, value: string) => {
     setSatate({ ...state, [key]: value });
   };
@@ -22,10 +26,13 @@ const CreateUsers: FunctionComponent<CreateUsersProps> = () => {
       if (state.email == '' || state.name == '') {
         alert('Bat data');
       } else {
-        const userCollection = collection(firebase.db, 'user');
-        const doc = await addDoc(userCollection, state);
-        console.log(`Doc ID: ${doc.id}`);
+        /*
+        crea el registro si no existe si existe lo actualiza
+        */
+        const docRef = doc(db, 'user', state.email);
+        setDoc(docRef, state, { merge: true });
         setSatate(initState);
+        navigation.navigate('LitsUsers');
       }
     } catch (error) {
       console.log(`Error Firebase: ${error}`);
@@ -37,8 +44,9 @@ const CreateUsers: FunctionComponent<CreateUsersProps> = () => {
       <ScrollView>
         <Text style={styles.title}>User Create</Text>
         <View style={styles.inputGroup}>
-          <TextInput
+          <Input
             placeholder="Name"
+            leftIcon={{ type: 'font-awesome', name: 'font' }}
             value={state.name}
             onChangeText={(value: string) => {
               handleChangeText('name', value);
@@ -46,8 +54,9 @@ const CreateUsers: FunctionComponent<CreateUsersProps> = () => {
           />
         </View>
         <View style={styles.inputGroup}>
-          <TextInput
+          <Input
             placeholder="Email"
+            leftIcon={{ type: 'font-awesome', name: 'envelope' }}
             value={state.email}
             onChangeText={(value: string) => {
               handleChangeText('email', value);
@@ -55,8 +64,9 @@ const CreateUsers: FunctionComponent<CreateUsersProps> = () => {
           />
         </View>
         <View style={styles.inputGroup}>
-          <TextInput
+          <Input
             placeholder="Phone"
+            leftIcon={{ type: 'material', name: 'phone' }}
             value={state.phone}
             onChangeText={(value: string) => {
               handleChangeText('phone', value);
@@ -68,6 +78,15 @@ const CreateUsers: FunctionComponent<CreateUsersProps> = () => {
             title="Save"
             onPress={() => {
               save();
+            }}
+          />
+        </View>
+        <View>
+          <Button
+            title="List"
+            style={{marginTop:10}}
+            onPress={() => {
+              navigation.navigate('LitsUsers');
             }}
           />
         </View>

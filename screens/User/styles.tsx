@@ -8,6 +8,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 35,
   },
+  avatar: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   inputGroup: {
     flex: 1,
     padding: 0,
