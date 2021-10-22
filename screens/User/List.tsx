@@ -1,6 +1,5 @@
-import { collection, onSnapshot, query } from 'firebase/firestore';
 import React, { FunctionComponent, useEffect, useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { Avatar, Button, ListItem } from 'react-native-elements';
 import { db } from '../../database/firebase';
 import { UserType } from 'types-app';
@@ -11,10 +10,10 @@ interface LitsUsersProps {
 }
 
 const LitsUsers: FunctionComponent<LitsUsersProps> = ({ navigation }) => {
+  const [loading, setLoading] = useState<boolean>(true)
   const [users, setUsers] = useState<UserType[]>([]);
   useEffect(() => {
-    const q = query(collection(db, 'user'));
-    onSnapshot(q, (snapshot) => {
+    db.collection('user').onSnapshot((snapshot) => {
       const data: UserType[] = [];
       snapshot.forEach((doc) => {
         const { name, email, phone } = doc.data();
@@ -25,51 +24,57 @@ const LitsUsers: FunctionComponent<LitsUsersProps> = ({ navigation }) => {
         });
       });
       setUsers(data);
+      setLoading(false);
     });
   }, []);
 
+  if (loading) {
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large"/>
+      </View>
+    );
+  }
   return (
-    <View style={styles.container}>
-      <ScrollView>
-        <Button
-          title="Create user"
-          onPress={() => {
-            navigation.navigate('CreateUsers');
-          }}
-        />
-        <Text style={styles.title}>User List</Text>
-        {users.map((user: UserType, i: number) => {
-          const { name, email } = user;
-          return (
-            <ListItem
-              key={i}
-              bottomDivider
-              linearGradientProps={{
-                colors: ['#FF9800', '#F44336'],
-                start: { x: 1, y: 0 },
-                end: { x: 0.2, y: 0 },
+    <ScrollView style={styles.container}>
+      <Button
+        title="Create user"
+        onPress={() => {
+          navigation.navigate('CreateUsers', {
+            user: { email: '', name: '', phone: '' },
+          });
+        }}
+      />
+      <Text style={styles.title}>User List</Text>
+      {users.map((user: UserType, i: number) => {
+        const { name, email } = user;
+        return (
+          <ListItem
+            key={i}
+            bottomDivider
+            onPress={() => {
+              navigation.navigate('DetailUsers', {
+                action: 'detail',
+                user,
+              });
+            }}
+          >
+            <Avatar
+              rounded
+              source={{
+                uri: `https://picsum.photos/100?v=${(Math.random() + 1)
+                  .toString(36)
+                  .substring(7)}`,
               }}
-              onPress={() => {
-                navigation.navigate('DetailUsers', user);
-              }}
-            >
-              <Avatar
-                rounded
-                source={{
-                  uri: `https://picsum.photos/100?v=${(Math.random() + 1)
-                    .toString(36)
-                    .substring(7)}`,
-                }}
-              />
-              <ListItem.Content>
-                <ListItem.Title>{name}</ListItem.Title>
-                <ListItem.Subtitle>{email}</ListItem.Subtitle>
-              </ListItem.Content>
-            </ListItem>
-          );
-        })}
-      </ScrollView>
-    </View>
+            />
+            <ListItem.Content>
+              <ListItem.Title>{name}</ListItem.Title>
+              <ListItem.Subtitle>{email}</ListItem.Subtitle>
+            </ListItem.Content>
+          </ListItem>
+        );
+      })}
+    </ScrollView>
   );
 };
 

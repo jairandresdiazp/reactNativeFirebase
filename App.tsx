@@ -2,8 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LitsUsers from './screens/User/List';
-import CreateUsers from './screens/User/Create';
-import DetailUsers from './screens/User/Detail';
+import CreateAndUpdateUsers from './screens/User/CreateAndUpdate';
 
 export default function App() {
   const Stack = createStackNavigator();
@@ -17,13 +16,20 @@ export default function App() {
         />
         <Stack.Screen
           name="CreateUsers"
-          component={CreateUsers}
+          component={CreateAndUpdateUsers}
           options={{ title: 'Create user' }}
+          initialParams={{
+            action: 'create',
+            user: { email: '', name: '', phone: '' },
+          }}
         />
         <Stack.Screen
           name="DetailUsers"
-          component={DetailUsers}
+          component={CreateAndUpdateUsers}
           options={{ title: 'Detail user' }}
+          initialParams={{
+            action: 'detail',
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>
