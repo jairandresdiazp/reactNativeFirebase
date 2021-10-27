@@ -10,7 +10,7 @@ interface LitsUsersProps {
 }
 
 const LitsUsers: FunctionComponent<LitsUsersProps> = ({ navigation }) => {
-  const [loading, setLoading] = useState<boolean>(true)
+  const [loading, setLoading] = useState<boolean>(true);
   const [users, setUsers] = useState<UserType[]>([]);
   useEffect(() => {
     db.collection('user').onSnapshot((snapshot) => {
@@ -31,7 +31,7 @@ const LitsUsers: FunctionComponent<LitsUsersProps> = ({ navigation }) => {
   if (loading) {
     return (
       <View style={styles.loader}>
-        <ActivityIndicator size="large"/>
+        <ActivityIndicator size="large" />
       </View>
     );
   }
